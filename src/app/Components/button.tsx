@@ -1,13 +1,15 @@
 import { useState } from 'react';
 
-export default function Button({ text }: { text: string }) {
-  const [CurrentLikeCount, LikeCounterUp] = useState(0);
+export default function Button({
+  children,
+  onClick,
+}: {
+  children: string;
+  onClick?: () => void;
+}) {
   return (
-    <div>
-      <button onClick={() => LikeCounterUp(CurrentLikeCount + 1)}>
-        {text}
-      </button>
-      <p> {CurrentLikeCount}</p>
-    </div>
+    <button onClick={onClick}>
+      {children}
+    </button>
   );
 }

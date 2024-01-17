@@ -11,3 +11,6 @@
   display: flex;
   gap: 24px;
 }
+.imageSender {
+  width: 50px;
+}

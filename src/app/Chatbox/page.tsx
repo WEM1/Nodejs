@@ -1,6 +1,7 @@
 'use client';
 import '@/app/global.css';
 import styles from './styles.module.css';
+import '../public/avatar-for-praxis/avatar2.svg';
 
 import Navbar from '../navbar';
 import { getCurrentDate } from '../Functions/getTime';
@@ -24,6 +25,13 @@ export default function Chatbox() {
           <div key={index} className={styles.message}>
             <p>{message.text}</p>
             <div>
+              <image
+                className='styles.imageSender'
+                href='../public/avatar-for-praxis/avatar2.svg'
+                width={50}
+                height={50}
+                alt='this is the author of the message'
+              />
               <p>{message.sender}</p>
               <p>{message.time}</p>
             </div>
