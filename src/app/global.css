@@ -1,0 +1,12 @@
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+}
+.navbar {
+  display: flex;
+  gap: 36px;
+  font-size: 36px;
+}

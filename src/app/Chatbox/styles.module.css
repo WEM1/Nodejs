@@ -1,0 +1,13 @@
+.section {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: end;
+
+  height: 40rem;
+  width: 50rem;
+  background-color: rebeccapurple;
+}
+.message {
+  display: flex;
+  gap: 24px;
+}
