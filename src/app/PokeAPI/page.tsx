@@ -15,45 +15,58 @@ export default function pokemon() {
   const [allPokemon, setAllPokemon] = useState<pokemon[]>([]);
   const [pokeStart, setPokeStart] = useState<number>();
   const [pokeCount, setPokeCount] = useState<number>();
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchData = async (url: string) => {
-    let data = await fetch(url);
-    let output = await data.json();
-    return output;
-  };
-
-  async function getName(pokemonStart: number, pokemonCount: number) {
-    let storedData = localStorage.getItem('pokemonData');
-    console.log(storedData);
-
-    if (storedData) {
-      let storedDataString = JSON.parse(storedData);
-      storedDataString.map((item,index)=>
-      )
-      setAllPokemon([...storedDataString]);
-    } else {
-      let pokemonData = [];
-      let data = await fetchData(
-        `https://pokeapi.co/api/v2/pokemon/?offset=${pokemonStart}&limit=${pokemonCount}`
-      );
-
-      for (let i = 0; i < data.results.length; i++) {
-        const pokeName = data.results[i].name;
-        const spriteLink = (
-          await fetchData(
-            `https://pokeapi.co/api/v2/pokemon/${pokemonStart + i + 1}/`
-          )
-        ).sprites.front_default;
-
-        pokemonData.push({ pokemonName: pokeName, sprite: spriteLink });
-      }
-
-      localStorage.setItem('pokemonData', JSON.stringify(pokemonData));
-
-      setAllPokemon([...pokemonData]);
+  async function fetchData(url: string) {
+    try {
+      let data = await fetch(url);
+      let output = await data.json();
+      return output;
+    } catch (error) {
+      console.error('Fetching Error', error);
+      throw error;
     }
   }
+  async function fetchPokemonData(pokemonStart: number, pokemonCount: number) {
+    setLoading(true);
+    try {
+      let storedData = localStorage.getItem('pokemonData');
+      console.log(storedData);
+      storedData = JSON.parse(storedData);
 
+      if (storedData && storedData.length > pokemonCount - pokemonStart) {
+        setAllPokemon([]);
+        for (let i = 0; i < pokemonCount; i++) {
+          setAllPokemon((prevPokemon) => [
+            ...prevPokemon,
+            { ...storedData[i + pokemonStart] },
+          ]);
+        }
+      } else {
+        let pokemonData = [];
+        let data = await fetchData(
+          `https://pokeapi.co/api/v2/pokemon/?offset=${pokemonStart}&limit=${pokemonCount}`
+        );
+
+        for (let i = 0; i < data.results.length; i++) {
+          const pokeName = data.results[i].name;
+          const spriteLink = (
+            await fetchData(
+              `https://pokeapi.co/api/v2/pokemon/${pokemonStart + i + 1}/`
+            )
+          ).sprites.front_default;
+
+          pokemonData.push({ pokemonName: pokeName, sprite: spriteLink });
+        }
+
+        localStorage.setItem('pokemonData', JSON.stringify(pokemonData));
+
+        setAllPokemon([...pokemonData]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <main>
       <Navbar />
@@ -74,10 +87,13 @@ export default function pokemon() {
 
         <button
           onClick={() =>
-            getName(pokeStart ? pokeStart : 0, pokeCount ? pokeCount : 1)
+            fetchPokemonData(
+              pokeStart ? pokeStart : 0,
+              pokeCount ? pokeCount : 1
+            )
           }
         >
-          Click me!
+          Get Pokemon
         </button>
         <button onClick={() => clearLocalStorage()}>Clear LocalStorage!</button>
       </section>
