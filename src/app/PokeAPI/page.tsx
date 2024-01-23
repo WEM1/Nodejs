@@ -5,6 +5,7 @@ import { useState } from 'react';
 import style from './styles.module.css';
 
 interface pokemon {
+  number: number;
   pokemonName: string;
   sprite: string;
 }
@@ -56,7 +57,11 @@ export default function pokemon() {
             )
           ).sprites.front_default;
 
-          pokemonData.push({ pokemonName: pokeName, sprite: spriteLink });
+          pokemonData.push({
+            number: pokemonStart + i + 1,
+            pokemonName: pokeName,
+            sprite: spriteLink,
+          });
         }
 
         localStorage.setItem('pokemonData', JSON.stringify(pokemonData));
@@ -97,20 +102,24 @@ export default function pokemon() {
         </button>
         <button onClick={() => clearLocalStorage()}>Clear LocalStorage!</button>
       </section>
-      <section className={style.pokemonSection}>
-        {allPokemon.map((item, index) => (
-          <div key={index}>
-            <img
-              width={100}
-              height={100}
-              src={item.sprite}
-              alt='Pokemon Image'
-            />
 
-            <p>{item.pokemonName}</p>
-          </div>
-        ))}
-      </section>
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <section className={style.pokemonSection}>
+          {allPokemon.map((item, index) => (
+            <div key={index}>
+              <img
+                width={100}
+                height={100}
+                src={item.sprite}
+                alt='Pokemon Image'
+              />
+              <p>{item.pokemonName}</p>
+            </div>
+          ))}
+        </section>
+      )}
     </main>
   );
 }
