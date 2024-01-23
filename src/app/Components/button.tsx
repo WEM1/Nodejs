@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import style from './button.module.css';
 
 export default function Button({
   children,
@@ -8,7 +8,7 @@ export default function Button({
   onClick?: () => void;
 }) {
   return (
-    <button onClick={onClick}>
+    <button onClick={onClick} className={style.button}>
       {children}
     </button>
   );

@@ -1,16 +1,25 @@
 .section {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  justify-content: end;
   align-items: end;
+  overflow: auto;
 
   height: 40rem;
-  width: 50rem;
-  background-color: rebeccapurple;
+  width: 40rem;
+  background-color: rgb(166, 166, 166);
 }
 .message {
   display: flex;
-  gap: 24px;
+  gap: 16px;
+  
+  border-radius: 10px 0 0 10px;
+  background-color: rgb(231, 230, 229);
+ 
+  padding-left: 24px;
+  margin-bottom: 16px;
 }
 .imageSender {
   width: 50px;
+  height: 50px;
 }

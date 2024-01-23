@@ -1,0 +1,10 @@
+.shoppingList {
+  display: flex;
+  gap: 24px;
+  width: 100rem;
+  flex-wrap: wrap;
+  flex: auto;
+  overflow: auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+}

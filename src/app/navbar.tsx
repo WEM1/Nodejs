@@ -6,6 +6,8 @@ export default function Navbar() {
       <Link href={'./'}>Home</Link>
       <Link href={'./Einkaufsliste/'}>Einkaufsliste</Link>
       <Link href={'./Chatbox/'}>Chatbox</Link>
+      <Link href={'./PokeAPI/'}>PokeAPI</Link>
+      <Link href={'./Components/'}>Utilities</Link>
     </nav>
   );
 }

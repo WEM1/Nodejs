@@ -2,6 +2,7 @@
 import Navbar from '../navbar';
 import { useState } from 'react';
 import '@/app/global.css';
+import style from './styles.module.css';
 
 interface Item {
   name: string;
@@ -22,20 +23,12 @@ export default function Einkaufsliste() {
   };
   const removeItem = (index: number) => {
     setAllItems((oldValues) => {
-      console.log(index);
-      console.log(oldValues);
       return oldValues.filter((_, i) => i !== index);
     });
   };
   const removeList = () => {
     setAllItems([]);
   };
-
-  /*   const divClickColor = () => {
-    setDivColor((currentColor) =>
-      currentColor === 'green' ? 'white' : 'green'
-    );
-  }; */
 
   return (
     <main>
@@ -56,8 +49,8 @@ export default function Einkaufsliste() {
         <button onClick={handleAddItem}>add</button>
         <button onClick={() => removeList()}>Remove List</button>
       </div>
-      
-      <div>
+
+      <div className={style.shoppingList}>
         {allItems.map((item, index) => (
           <section key={index}>
             <div

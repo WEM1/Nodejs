@@ -13,7 +13,10 @@ export default function Home() {
       {Navbar()}
       <label>
         <div>
-          {/* <Button children={'Test this'} onClick={LikeCounterUp()}></Button> */}
+          <Button
+            children={'>Click me!<'}
+            onClick={() => LikeCounterUp(CurrentLikeCount + 1)}
+          ></Button>
           <p>{CurrentLikeCount}</p>
         </div>
       </label>

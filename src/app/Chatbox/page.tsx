@@ -1,21 +1,35 @@
 'use client';
 import '@/app/global.css';
 import styles from './styles.module.css';
-import '../public/avatar-for-praxis/avatar2.svg';
+import profilePic from '../../../public/avatar-for-praxis/avatar2.svg';
 
 import Navbar from '../navbar';
 import { getCurrentDate } from '../Functions/getTime';
-import { useState } from 'react';
+import { Key, useState } from 'react';
+import Image from 'next/image';
 
 interface message {
   text: string;
   time: string;
   sender: string;
+  imageSize?: number;
 }
 
 export default function Chatbox() {
   const [allMessages, setAllMessages] = useState<message[]>([]);
   const [allMessageContent, setAllMessageContent] = useState('');
+
+  function buttonClick() {
+    setAllMessages([
+      ...allMessages,
+      {
+        text: allMessageContent,
+        time: getCurrentDate(),
+        sender: 'Harald',
+        imageSize: 50,
+      },
+    ]);
+  }
 
   return (
     <main>
@@ -23,17 +37,27 @@ export default function Chatbox() {
       <section className={styles.section}>
         {allMessages.map((message, index) => (
           <div key={index} className={styles.message}>
-            <p>{message.text}</p>
             <div>
-              <image
-                className='styles.imageSender'
-                href='../public/avatar-for-praxis/avatar2.svg'
-                width={50}
-                height={50}
+              <p>{message.text}</p>
+              <p>{message.time}</p>
+            </div>
+            <div>
+              <Image
+                key={index}
+                src={profilePic}
+                width={allMessages[index].imageSize}
+                height={allMessages[index].imageSize}
                 alt='this is the author of the message'
+                onMouseEnter={() => {
+                  allMessages[index].imageSize = 100;
+                  setAllMessages([...allMessages]);
+                }}
+                onMouseLeave={() => {
+                  allMessages[index].imageSize = 50;
+                  setAllMessages([...allMessages]);
+                }}
               />
               <p>{message.sender}</p>
-              <p>{message.time}</p>
             </div>
           </div>
         ))}
@@ -46,21 +70,13 @@ export default function Chatbox() {
           aria-label='test this'
           value={allMessageContent}
           onChange={(event) => setAllMessageContent(event.target.value)}
-        />
-        <button
-          onClick={() => {
-            setAllMessages([
-              ...allMessages,
-              {
-                text: allMessageContent,
-                time: getCurrentDate(),
-                sender: 'Harald',
-              },
-            ]);
+          onKeyDown={(event) => {
+            if (event.keyCode == 13) {
+              buttonClick();
+            }
           }}
-        >
-          Send
-        </button>
+        />
+        <button onClick={buttonClick}>Send</button>
       </div>
     </main>
   );
