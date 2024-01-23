@@ -8,7 +8,9 @@ interface pokemon {
   pokemonName: string;
   sprite: string;
 }
-
+const clearLocalStorage = () => {
+  localStorage.clear();
+};
 export default function pokemon() {
   const [allPokemon, setAllPokemon] = useState<pokemon[]>([]);
   const [pokeStart, setPokeStart] = useState<number>();
@@ -21,29 +23,37 @@ export default function pokemon() {
   };
 
   async function getName(pokemonStart: number, pokemonCount: number) {
-    let pokemonData = [];
-    let data = await fetchData(
-      `https://pokeapi.co/api/v2/pokemon/?offset=${pokemonStart}&limit=${pokemonCount}`
-    );
-    let pokeName, spriteLink;
+    let storedData = localStorage.getItem('pokemonData');
+    console.log(storedData);
 
-    for (let i = 0; i < data.results.length; i++) {
-      pokeName = await data.results[i].name;
-      spriteLink = await (
-        await fetchData(
-          `https://pokeapi.co/api/v2/pokemon/${pokemonStart + i + 1}/`
-        )
-      ).sprites.front_default;
+    if (storedData) {
+      let storedDataString = JSON.parse(storedData);
+      storedDataString.map((item,index)=>
+      )
+      setAllPokemon([...storedDataString]);
+    } else {
+      let pokemonData = [];
+      let data = await fetchData(
+        `https://pokeapi.co/api/v2/pokemon/?offset=${pokemonStart}&limit=${pokemonCount}`
+      );
 
-      pokemonData.push({ pokemonName: pokeName, sprite: spriteLink });
+      for (let i = 0; i < data.results.length; i++) {
+        const pokeName = data.results[i].name;
+        const spriteLink = (
+          await fetchData(
+            `https://pokeapi.co/api/v2/pokemon/${pokemonStart + i + 1}/`
+          )
+        ).sprites.front_default;
+
+        pokemonData.push({ pokemonName: pokeName, sprite: spriteLink });
+      }
+
+      localStorage.setItem('pokemonData', JSON.stringify(pokemonData));
+
+      setAllPokemon([...pokemonData]);
     }
-    localStorage.setItem('pokemonData', JSON.stringify(pokemonData));
-    console.log(localStorage.getItem('pokemonData'));
-
-    const storedData = JSON.parse(localStorage.getItem('pokemonData'));
-
-    setAllPokemon([...storedData]);
   }
+
   return (
     <main>
       <Navbar />
@@ -69,6 +79,7 @@ export default function pokemon() {
         >
           Click me!
         </button>
+        <button onClick={() => clearLocalStorage()}>Clear LocalStorage!</button>
       </section>
       <section className={style.pokemonSection}>
         {allPokemon.map((item, index) => (
