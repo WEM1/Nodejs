@@ -2,64 +2,76 @@
 import Navbar from '../navbar';
 import '../global.css';
 import { useState } from 'react';
-import style from './styles.module.css';
+import styles from './Pokemon.module.css';
 
-interface pokemon {
+interface PokemonData {
   number: number;
-  pokemonName: string;
+  name: string;
   sprite: string;
 }
+
 const clearLocalStorage = () => {
   localStorage.clear();
 };
-export default function pokemon() {
-  const [allPokemon, setAllPokemon] = useState<pokemon[]>([]);
-  const [pokeStart, setPokeStart] = useState<number>();
-  const [pokeCount, setPokeCount] = useState<number>();
+
+export default function Pokemon() {
+  const [allPokemon, setAllPokemon] = useState<PokemonData[]>([]);
+  const [startId, setStartId] = useState<number>();
+  const [pokemonCount, setPokemonCount] = useState<number>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+
+  const loadingValue = (current: number, absolute: number) => {
+    let progress = current / absolute;
+    setLoadingProgress(progress);
+    return;
+  };
 
   async function fetchData(url: string) {
     try {
-      let data = await fetch(url);
-      let output = await data.json();
-      return output;
+      const response = await fetch(url);
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Fetching Error', error);
       throw error;
     }
   }
-  async function fetchPokemonData(pokemonStart: number, pokemonCount: number) {
+
+  async function fetchPokemonData(startId: number, count: number) {
     setLoading(true);
     try {
       let storedData = localStorage.getItem('pokemonData');
       console.log(storedData);
       storedData = JSON.parse(storedData);
 
-      if (storedData && storedData.length > pokemonCount - pokemonStart) {
+      if (storedData && storedData.length > count - startId) {
         setAllPokemon([]);
-        for (let i = 0; i < pokemonCount; i++) {
+        for (let i = 0; i < count; i++) {
+          loadingValue(i, storedData.length);
           setAllPokemon((prevPokemon) => [
             ...prevPokemon,
-            { ...storedData[i + pokemonStart] },
+            { ...storedData[i + startId], number: i + startId + 1 },
           ]);
         }
       } else {
         let pokemonData = [];
         let data = await fetchData(
-          `https://pokeapi.co/api/v2/pokemon/?offset=${pokemonStart}&limit=${pokemonCount}`
+          `https://pokeapi.co/api/v2/pokemon/?offset=${startId}&limit=${count}`
         );
 
         for (let i = 0; i < data.results.length; i++) {
+          loadingValue(i, data.results.length);
           const pokeName = data.results[i].name;
           const spriteLink = (
             await fetchData(
-              `https://pokeapi.co/api/v2/pokemon/${pokemonStart + i + 1}/`
+              `https://pokeapi.co/api/v2/pokemon/${startId + i + 1}/`
             )
           ).sprites.front_default;
 
           pokemonData.push({
-            number: pokemonStart + i + 1,
-            pokemonName: pokeName,
+            number: startId + i + 1,
+            name: pokeName,
             sprite: spriteLink,
           });
         }
@@ -72,41 +84,53 @@ export default function pokemon() {
       setLoading(false);
     }
   }
+
   return (
     <main>
       <Navbar />
       <section>
         <input
           type='number'
-          placeholder='Starting-point(default 0)'
-          value={pokeStart}
-          onChange={(event) => setPokeStart(+event.target.value)}
+          placeholder='Starting point (default 0)'
+          value={startId}
+          onChange={(event) => setStartId(+event.target.value)}
         />
 
         <input
           type='number'
-          placeholder='How many Pokemon?'
-          value={pokeCount}
-          onChange={(event) => setPokeCount(+event.target.value)}
+          placeholder='How many Pokémon?'
+          value={pokemonCount}
+          onChange={(event) => setPokemonCount(+event.target.value)}
         />
 
         <button
           onClick={() =>
             fetchPokemonData(
-              pokeStart ? pokeStart : 0,
-              pokeCount ? pokeCount : 1
+              startId ? startId : 0,
+              pokemonCount ? pokemonCount : 1
             )
           }
         >
-          Get Pokemon
+          Get Pokémon
         </button>
-        <button onClick={() => clearLocalStorage()}>Clear LocalStorage!</button>
+        <button onClick={() => clearLocalStorage()}>
+          Clear Local Storage!
+        </button>
       </section>
 
       {loading ? (
-        <div>Loading...</div>
+        <div className={styles.loading}>
+          <div
+            className={`${styles.loading} ${styles.absolute}`}
+            style={{
+              width: loadingProgress * 500,
+            }}
+          >
+            {loadingProgress * 100}% Loading...
+          </div>
+        </div>
       ) : (
-        <section className={style.pokemonSection}>
+        <section className={styles.pokemonSection}>
           {allPokemon.map((item, index) => (
             <div key={index}>
               <img
@@ -115,7 +139,7 @@ export default function pokemon() {
                 src={item.sprite}
                 alt='Pokemon Image'
               />
-              <p>{item.pokemonName}</p>
+              <p>{item.name}</p>
             </div>
           ))}
         </section>

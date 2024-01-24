@@ -1,0 +1,19 @@
+.pokemonSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 500px;
+  height: 30px;
+  border-radius: 9px;
+  border: solid black 1px;
+  position: relative;
+}
+.absolute {
+  position: absolute;
+  background-color: rgb(88, 188, 224);
+}
